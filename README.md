@@ -44,8 +44,8 @@ This project implements a wine quality prediction ML model using Apache Spark on
 
 ## Setup and Execution
 - See `CS643-VK722-Instruction-Document.pdf` for detailed step-by-step instructions please follow below file. 
-- **Note : Git Hub Repo Read Me file is just overview
-Link: https://github.com/vishal2609/CC-CS643-Prgm-Assgn-2-/blob/main/CS643-VK722-Instruction-Document.pdf
+- **Note : Git Hub Repo Read Me file is just overview, for detailed instruction document follow below link
+- Link: https://github.com/vishal2609/CC-CS643-Prgm-Assgn-2-/blob/main/CS643-VK722-Instruction-Document.pdf
 
 ### 1. Clone the Repository
 ```bash
