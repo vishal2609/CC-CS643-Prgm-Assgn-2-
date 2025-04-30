@@ -31,14 +31,6 @@ This project implements a wine quality prediction ML model using Apache Spark on
 - **Validation**: Evaluated using F1 Score on ValidationDataset.csv.
 - **Final Output**: F1 Score printed in logs.
 
----
-## 🐳 Docker Image
-
-- **Built on Base**: `openjdk:8-jdk`
-- **Includes**: Apache Spark 3.3.3, Hadoop 3.3.1, AWS S3 support (hadoop-aws + aws-sdk-bundle)
-- **Run Mode**: `local[*]`
-
----
 
 ---
 
@@ -46,11 +38,13 @@ This project implements a wine quality prediction ML model using Apache Spark on
 
 - 🔗 **Docker Image**: https://hub.docker.com/r/vishalk722/wine-ml-app
 - 🔗 **GitHub Repo**: https://github.com/vishal2609/CC-CS643-Prgm-Assgn-2-
+- 🔗 **Instruction Doc**: https://github.com/vishal2609/CC-CS643-Prgm-Assgn-2-
 
 ---
 
 ## Setup and Execution
-See `submission_instructions.docx` for detailed step-by-step instructions. Summary:
+See `CS643-VK722-Instruction-Document.pdf` for detailed step-by-step instructions. 
+Link:
 
 ### 1. Clone the Repository
 ```bash
@@ -64,21 +58,34 @@ cd wine-ml-spark
   ```bash
   spark-submit --class com.wine.WineTrainApp --master yarn --deploy-mode client target/wine-ml-spark-1.0-SNAPSHOT.jar
   ```
-
-### 3. Prediction
+### 4. Train model in parallel (4 nodes)
+  ```bash
+        spark-submit \
+    --class com.wine.WinePrediction \
+    --master yarn \
+    --deploy-mode cluster \
+    --num-executors 4 \
+    --executor-cores 2 \
+    --executor-memory 2G \
+    target/wine-ml-spark-1.0-SNAPSHOT.jar
+  ```
+### 5. Prediction on single cluster/EMR
 - **Without Docker**:
   ```bash
-  spark-submit --class com.wine.WinePredictApp --master local[*] target/wine-ml-spark-1.0-SNAPSHOT.jar
+    spark-submit \
+    --class com.wine.WinePredictApp \
+    --master yarn \
+    target/wine-ml-spark-1.0-SNAPSHOT.jar
+
   ```
 - **With Docker**:
   ```bash
-  docker pull <your-dockerhub-username>/wine-predictor:v16
-  sudo docker run --rm -v $HOME/.ivy2:/root/.ivy2 -v $HOME:/root -e HOME=/root -e SPARK_SUBMIT_OPTS="-Divy.cache.dir=/root/.ivy2/cache -Divy.home=/root/.ivy2" --user root <your-dockerhub-username>/wine-predictor:v16
+  docker pull vishalk722/wine-ml-app:v16
+  sudo docker run --rm   -v $HOME/.ivy2:/root/.ivy2   -v $HOME:/root   -e HOME=/root   -e SPARK_SUBMIT_OPTS="-Divy.cache.dir=/root/.ivy2/cache -Divy.home=/root/.ivy2"   --user root   vishalk722/wine-ml-app:v16
   ```
 
 ## Results
-- Model: Random Forest (100 trees, max depth 10).
-- F1 Score on Validation Data: [Insert your F1 score here].
+- F1 Score on Validation-Data Logistic Regression: ~60%.
 
 ## Challenges and Solutions
 - Java path issues: Fixed by setting `JAVA_HOME=/usr/local/openjdk-8`.
