@@ -1,0 +1,11 @@
+# Use an OpenJDK base image
+FROM openjdk:11
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the jar file into the container
+COPY wine-ml-spark-1.0-SNAPSHOT.jar /app/
+
+# Set entrypoint to run Spark job
+ENTRYPOINT ["java", "-jar", "wine-ml-spark-1.0-SNAPSHOT.jar"]
