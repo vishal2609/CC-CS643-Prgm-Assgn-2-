@@ -21,7 +21,7 @@ public class WinePredictApp {
                 .option("header", "true")
                 .option("inferSchema", "true")
                 .option("delimiter", ";")
-                .csv("s3://wine-ml-bucket-vk722/ValidationDataset.csv");
+                .csv("s3a://wine-ml-bucket-vk722/ValidationDataset.csv");
 
         // 3. Clean column names (remove extra quotes)
         for (String colName : data.columns()) {
@@ -45,7 +45,7 @@ public class WinePredictApp {
                 .select("features", "label");
 
         // 6. Load the trained model
-        LogisticRegressionModel model = LogisticRegressionModel.load("s3://wine-ml-bucket-vk722/wine_quality_model");
+        LogisticRegressionModel model = LogisticRegressionModel.load("s3a://wine-ml-bucket-vk722/wine_quality_model");
 
         // 7. Perform prediction
         Dataset<Row> predictions = model.transform(testData);
