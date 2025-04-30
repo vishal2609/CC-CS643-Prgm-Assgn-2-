@@ -80,15 +80,6 @@ See [`screenshots/`](./screenshots) folder for:
 
 ---
 
-## ✅ What is Done
-
-- [x] Parallel model training on 4-node EMR cluster
-- [x] Validation with F1 score
-- [x] Dockerized prediction application
-- [x] Pushed image to Docker Hub
-- [x] Tested image on single EC2 (EMR node)
-
----
 
 ## 📦 Submission Summary
 
@@ -99,11 +90,3 @@ See [`screenshots/`](./screenshots) folder for:
 
 ---
 
-## 🏁 Grading Summary
-
-| Task                                 | Status  |
-|--------------------------------------|---------|
-| Parallel training (EMR)              | ✅ Done |
-| Prediction App (Single EC2/Docker)   | ✅ Done |
-| Dockerized prediction container      | ✅ Done |
-| Bonus (High Accuracy?)               | 🎯 TBD  |
