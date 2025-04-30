@@ -1,21 +1,23 @@
-FROM bitnami/spark:3.3.0
-
-WORKDIR /app
-
-COPY target/wine-ml-spark-1.0-SNAPSHOT.jar /app/app.jar
+#updated DOcker file
+FROM openjdk:8-jdk
 
 # Set environment variables
-ENV HADOOP_CONF_DIR=/etc/hadoop/conf
-ENV YARN_CONF_DIR=/etc/hadoop/conf
-ENV HOME=/root
-RUN mkdir -p $HOME/.ivy2
+ENV HADOOP_VERSION=3.3.5
+ENV SPARK_VERSION=3.3.0
 
-# Add Hadoop 3.3.6 client libraries and JAX-RS dependency
-RUN curl -L https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client/3.3.6/hadoop-client-3.3.6.jar -o /opt/bitnami/spark/jars/hadoop-client-3.3.6.jar && \
-    curl -L https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/3.3.6/hadoop-common-3.3.6.jar -o /opt/bitnami/spark/jars/hadoop-common-3.3.6.jar && \
-    curl -L https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-yarn-client/3.3.6/hadoop-yarn-client-3.3.6.jar -o /opt/bitnami/spark/jars/hadoop-yarn-client-3.3.6.jar && \
-    curl -L https://repo1.maven.org/maven2/javax/ws/rs/javax.ws.rs-api/2.1.1/javax.ws.rs-api-2.1.1.jar -o /opt/bitnami/spark/jars/javax.ws.rs-api-2.1.1.jar
+# Install necessary packages
+RUN apt-get update && \
+    apt-get install -y curl tar unzip && \
+    rm -rf /var/lib/apt/lists/*
 
-ENV SPARK_SUBMIT_OPTS="-Divy.cache.dir=/root/.ivy2/cache -Divy.home=/root/.ivy2"
+# Install Hadoop
+RUN curl -LO https://downloads.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz && \
+    tar -xzf hadoop-${HADOOP_VERSION}.tar.gz -C /opt && \
+    ln -s /opt/hadoop-${HADOOP_VERSION} /opt/hadoop && \
+    rm hadoop-${HADOOP_VERSION}.tar.gz
 
-ENTRYPOINT ["/opt/bitnami/spark/bin/spark-submit", "--class", "com.wine.WinePredictApp", "--master", "yarn", "/app/app.jar"]
+# Install Spark
+RUN curl -LO https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz && \
+    tar -xzf spark-${SPARK_VERSION}-bin-hadoop3.tgz -C /opt && \
+    ln -s /opt/spark-${SPARK_VERSION}-bin-hadoop3 /opt/spark && \
+    rm spark-${SPARK_VERSION}-bin-hadoop3.tgz
