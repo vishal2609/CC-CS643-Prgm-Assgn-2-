@@ -10,12 +10,44 @@ This project implements a wine quality prediction ML model using Apache Spark on
 - **Docker**: Containerize the prediction app for easy deployment.
 - **Implementation**: Java, Ubuntu Linux, Spark MLlib.
 
-### Project Structure
-- `WineTrainApp.java`: Training application (Random Forest model).
-- `WinePredictApp.java`: Prediction application.
-- `pom.xml`: Maven configuration.
-- `Dockerfile`: Docker setup for prediction app.
-- `README.md`: This file.
+## 🔧 Project Structure
+
+```
+.
+├── src/                            # Java source code for training and prediction
+│   └── main/java/com/wine/        # WinePrediction.java, WinePredictApp.java
+├── target/                        # (Generated) Final JAR after build (excluded from GitHub)
+├── Dockerfile                     # Final working Dockerfile (local mode)
+├── pom.xml                        # Maven configuration file
+├── README.md                      # Project documentation
+└── screenshots/                   # Screenshots of final EMR run and Docker results
+```
+
+---
+
+## 📊 Model Details
+
+- **Training**: Runs on 4-node EMR cluster using Spark.
+- **Validation**: Evaluated using F1 Score on ValidationDataset.csv.
+- **Final Output**: F1 Score printed in logs.
+
+---
+## 🐳 Docker Image
+
+- **Built on Base**: `openjdk:8-jdk`
+- **Includes**: Apache Spark 3.3.3, Hadoop 3.3.1, AWS S3 support (hadoop-aws + aws-sdk-bundle)
+- **Run Mode**: `local[*]`
+
+---
+
+---
+
+## 📁 DockerHub & GitHub
+
+- 🔗 **Docker Image**: https://hub.docker.com/r/vishalk722/wine-ml-app
+- 🔗 **GitHub Repo**: https://github.com/vishal2609/CC-CS643-Prgm-Assgn-2-
+
+---
 
 ## Setup and Execution
 See `submission_instructions.docx` for detailed step-by-step instructions. Summary:
