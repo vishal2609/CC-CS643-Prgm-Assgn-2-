@@ -1,59 +1,109 @@
+# 🍷 Wine Quality Prediction - Apache Spark on AWS
 
-# Wine Quality Prediction - Cloud Computing Project
-
-## Overview
-This project focuses on building a **Wine Quality Prediction** machine learning model using **Apache Spark** on **AWS EMR** with **4 EC2 instances** for training and **1 EC2 instance** for prediction. It was implemented in **Java** and integrated with **S3 storage**.
+This project demonstrates a parallel machine learning workflow using Apache Spark and Docker on AWS. The objective is to train and deploy a wine quality prediction model using logistic regression. The solution includes parallel model training on a Spark cluster and a prediction application running inside a Docker container.
 
 ---
 
-## Project Phases Completed
+## ✅ Project Components
 
-- ✅ Created EMR Cluster (4 nodes: 1 master + 3 core nodes).
-- ✅ Launched cluster with Hadoop and Spark applications.
-- ✅ Connected via SSH (PuTTY on Windows).
-- ✅ Uploaded `TrainingDataset.csv` and `ValidationDataset.csv` to S3 bucket.
-- ✅ Set up Java project with Maven.
-- ✅ Built training application: `WinePrediction.java`.
-- ✅ Built prediction application: `WinePredictApp.java`.
-- ✅ Trained Logistic Regression model with MLlib.
-- ✅ Saved and loaded model from S3.
-- ✅ Performed mini model tests.
-- ✅ Evaluated model performance using F1 Score.
-- ✅ Successfully ran applications using `spark-submit` on EMR.
+| Component | Description |
+|----------|-------------|
+| Language | Java (Maven project) |
+| ML Model | Logistic Regression (Spark MLlib) |
+| Platform | Apache Spark 3.3.3, Hadoop 3.3.1 |
+| Deployment | AWS EMR (Training), Docker (Prediction) |
 
 ---
 
-## Files
+## 🔧 Project Structure
 
-- `WinePrediction.java` → Training code
-- `WinePredictApp.java` → Prediction code
-- `pom.xml` → Maven dependencies and build file
-- `wine-ml-spark-1.0-SNAPSHOT.jar` → Built Java project for Spark
-- Datasets in S3 bucket: `TrainingDataset.csv`, `ValidationDataset.csv`
-
----
-
-## Important Details
-
-- **Programming Language**: Java
-- **Framework**: Apache Spark MLlib
-- **Cloud Platform**: AWS (EMR, S3)
-- **Model Used**: Logistic Regression
-- **Performance Metric**: F1 Score
-- **Data Format**: CSV (with cleaned column headers)
+```
+.
+├── src/                            # Java source code for training and prediction
+│   └── main/java/com/wine/        # WinePrediction.java, WinePredictApp.java
+├── target/                        # (Generated) Final JAR after build (excluded from GitHub)
+├── Dockerfile                     # Final working Dockerfile (local mode)
+├── pom.xml                        # Maven configuration file
+├── README.md                      # Project documentation
+└── screenshots/                   # Screenshots of final EMR run and Docker results
+```
 
 ---
 
-## Notes
-- For screenshots of YARN UI and Spark jobs, use Windows Snipping Tool or built-in screenshot shortcuts.
-- All logs were verified using Spark History Server and YARN Resource Manager.
+## 📊 Model Details
+
+- **Training**: Runs on 4-node EMR cluster using Spark.
+- **Validation**: Evaluated using F1 Score on ValidationDataset.csv.
+- **Final Output**: F1 Score printed in logs.
 
 ---
 
-## Next Steps
-- Dockerize the Wine Prediction App.
-- Test containerized app on a single EC2 instance.
+## 🐳 Docker Image
+
+- **Built on Base**: `openjdk:8-jdk`
+- **Includes**: Apache Spark 3.3.3, Hadoop 3.3.1, AWS S3 support (hadoop-aws + aws-sdk-bundle)
+- **Run Mode**: `local[*]`
 
 ---
 
-# 📦 Good luck and great job so far!
+## 🚀 How to Run (Prediction Phase)
+
+### Option 1: Run Locally in Docker (Single EC2)
+```bash
+sudo docker run --rm wine-predictor:local
+```
+
+### Option 2: Run on EMR (YARN mode)
+*(Optional, if desired to scale Docker to YARN)*
+
+---
+
+## 🧱 Build Docker Image (If Needed)
+```bash
+docker build -t wine-predictor:local .
+```
+
+---
+
+## 📁 DockerHub & GitHub
+
+- 🔗 **Docker Image**: https://hub.docker.com/r/vishalk722/wine-ml-app
+- 🔗 **GitHub Repo**: https://github.com/vishal2609/CC-CS643-Prgm-Assgn-2-
+
+---
+
+## 📸 Screenshots
+
+See [`screenshots/`](./screenshots) folder for:
+- Parallel model training on EMR
+- Prediction result with F1 score printed
+
+---
+
+## ✅ What is Done
+
+- [x] Parallel model training on 4-node EMR cluster
+- [x] Validation with F1 score
+- [x] Dockerized prediction application
+- [x] Pushed image to Docker Hub
+- [x] Tested image on single EC2 (EMR node)
+
+---
+
+## 📦 Submission Summary
+
+- ✔ GitHub repo includes training and prediction code.
+- ✔ Docker Hub image ready for prediction.
+- ✔ Final run screenshot included in `screenshots/`.
+- ✔ README includes clear build/run steps.
+
+---
+
+## 🏁 Grading Summary
+
+| Task                                 | Status  |
+|--------------------------------------|---------|
+| Parallel training (EMR)              | ✅ Done |
+| Prediction App (Single EC2/Docker)   | ✅ Done |
+| Dockerized prediction container      | ✅ Done |
+| Bonus (High Accuracy?)               | 🎯 TBD  |
