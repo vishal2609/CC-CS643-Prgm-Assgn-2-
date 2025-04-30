@@ -6,7 +6,7 @@ This project implements a wine quality prediction ML model using Apache Spark on
 ### Assignment Requirements
 - **Training**: Train a model on `TrainingDataset.csv` using 4 EC2 instances.
 - **Validation**: Evaluate and tune the model using `ValidationDataset.csv`.
-- **Prediction**: Perform predictions on a single EC2 instance, outputting the F1 score.
+- **Prediction**: Perform predictions on a single EC2 instance with and without docker, outputting the F1 score.
 - **Docker**: Containerize the prediction app for easy deployment.
 - **Implementation**: Java, Ubuntu Linux, Spark MLlib.
 
@@ -20,7 +20,7 @@ This project implements a wine quality prediction ML model using Apache Spark on
 ├── Dockerfile                     # Final working Dockerfile (local mode)
 ├── pom.xml                        # Maven configuration file
 ├── README.md                      # Project documentation
-└── screenshots/                   # Screenshots of final EMR run and Docker results
+└── CS643-VK722-Instruction-Document.pdf  # Step by Step Instruction document
 ```
 
 ---
@@ -36,39 +36,40 @@ This project implements a wine quality prediction ML model using Apache Spark on
 
 ## 📁 DockerHub & GitHub
 
-- 🔗 **Docker Image**: https://hub.docker.com/r/vishalk722/wine-ml-app
+- 🔗 **Docker Image**: https://hub.docker.com/r/vishalk722/wine-ml-app/tags
 - 🔗 **GitHub Repo**: https://github.com/vishal2609/CC-CS643-Prgm-Assgn-2-
-- 🔗 **Instruction Doc**: https://github.com/vishal2609/CC-CS643-Prgm-Assgn-2-
+- 🔗 **Instruction Doc**: https://github.com/vishal2609/CC-CS643-Prgm-Assgn-2-/blob/main/CS643-VK722-Instruction-Document.pdf
 
 ---
 
 ## Setup and Execution
-See `CS643-VK722-Instruction-Document.pdf` for detailed step-by-step instructions. 
-Link:
+See `CS643-VK722-Instruction-Document.pdf` for detailed step-by-step instructions please follow below file. 
+Note : Git Hub Repo Read Me file is just overview
+Link: https://github.com/vishal2609/CC-CS643-Prgm-Assgn-2-/blob/main/CS643-VK722-Instruction-Document.pdf
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/<your-username>/wine-ml-spark.git
-cd wine-ml-spark
+git clone https://github.com/vishal2609/CC-CS643-Prgm-Assgn-2-.git
+cd CC-CS643-Prgm-Assgn-2-
 ```
 
-### 2. Model Training
-- Build: `mvn clean package`
-- Run on EMR with YARN:
-  ```bash
-  spark-submit --class com.wine.WineTrainApp --master yarn --deploy-mode client target/wine-ml-spark-1.0-SNAPSHOT.jar
-  ```
+### 2. Maven Application packaging 
+- Build locally: `mvn clean package`
+
+### 3. uploaded File on S3 & Create EMR cluster 
+- Details are mentioned in Instruction Document
+
 ### 4. Train model in parallel (4 nodes)
-  ```bash
+    ```bash
         spark-submit \
-    --class com.wine.WinePrediction \
-    --master yarn \
-    --deploy-mode cluster \
-    --num-executors 4 \
-    --executor-cores 2 \
-    --executor-memory 2G \
-    target/wine-ml-spark-1.0-SNAPSHOT.jar
-  ```
+        --class com.wine.WinePrediction \
+        --master yarn \
+        --deploy-mode cluster \
+        --num-executors 4 \
+        --executor-cores 2 \
+        --executor-memory 2G \
+        target/wine-ml-spark-1.0-SNAPSHOT.jar
+    ```
 ### 5. Prediction on single cluster/EMR
 - **Without Docker**:
   ```bash
@@ -85,7 +86,7 @@ cd wine-ml-spark
   ```
 
 ## Results
-- F1 Score on Validation-Data Logistic Regression: ~60%.
+- F1 Score on Validation-Data, Model used Logistic Regression: ~60%.
 
 ## Challenges and Solutions
 - Java path issues: Fixed by setting `JAVA_HOME=/usr/local/openjdk-8`.
