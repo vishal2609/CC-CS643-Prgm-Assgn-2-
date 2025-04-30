@@ -1,31 +1,35 @@
-# Base image with OpenJDK
+# Base Image
 FROM openjdk:8-jdk
 
-# Install dependencies: curl, tar, unzip
-RUN apt-get update && apt-get install -y curl tar unzip && rm -rf /var/lib/apt/lists/*
-
-# Install Hadoop 3.3.5
-RUN curl -LO https://downloads.apache.org/hadoop/common/hadoop-3.3.5/hadoop-3.3.5.tar.gz && \
-    tar -xzf hadoop-3.3.5.tar.gz -C /opt && \
-    ln -s /opt/hadoop-3.3.5 /opt/hadoop && \
-    rm hadoop-3.3.5.tar.gz
-
-# Install Spark 3.3.0 (hadoop3 version)
-RUN curl -LO https://downloads.apache.org/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz && \
-    tar -xzf spark-3.3.0-bin-hadoop3.tgz -C /opt && \
-    ln -s /opt/spark-3.3.0-bin-hadoop3 /opt/spark && \
-    rm spark-3.3.0-bin-hadoop3.tgz
-
 # Set environment variables
+ENV HADOOP_VERSION=3.3.5
+ENV SPARK_VERSION=3.3.3
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 ENV SPARK_HOME=/opt/spark
-ENV HADOOP_HOME=/opt/hadoop
-ENV PATH=$PATH:$SPARK_HOME/bin:$HADOOP_HOME/bin
+ENV PATH=$SPARK_HOME/bin:$PATH
+
+# Install dependencies and clean up
+RUN apt-get update && \
+    apt-get install -y curl tar unzip && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Hadoop
+RUN curl -LO https://downloads.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz && \
+    tar -xzf hadoop-${HADOOP_VERSION}.tar.gz -C /opt && \
+    ln -s /opt/hadoop-${HADOOP_VERSION} /opt/hadoop && \
+    rm hadoop-${HADOOP_VERSION}.tar.gz
+
+# Install Spark
+RUN curl -LO https://downloads.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz && \
+    tar -xzf spark-${SPARK_VERSION}-bin-hadoop3.tgz -C /opt && \
+    ln -s /opt/spark-${SPARK_VERSION}-bin-hadoop3 /opt/spark && \
+    rm spark-${SPARK_VERSION}-bin-hadoop3.tgz
 
 # Set working directory
 WORKDIR /app
 
-# Copy the JAR file into the container
+# Copy application jar (make sure it's already built using mvn package)
 COPY target/wine-ml-spark-1.0-SNAPSHOT.jar /app/app.jar
 
-# Run the Spark job locally with all cores
-ENTRYPOINT ["spark-submit", "--class", "com.wine.WinePredictApp", "--master", "local[*]", "/app/app.jar"]
+# Run Spark application in local mode
+ENTRYPOINT ["/opt/spark/bin/spark-submit", "--class", "com.wine.WinePredictApp", "--master", "local[*]", "/app/app.jar"]
