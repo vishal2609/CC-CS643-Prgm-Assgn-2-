@@ -1,8 +1,22 @@
-## Use an OpenJDK base image
 FROM bitnami/spark:3.3.0
-#Set the working directory
+
+# Install Hadoop 3.3.5
+RUN apt-get update && apt-get install -y curl unzip && \
+    curl -O https://downloads.apache.org/hadoop/common/hadoop-3.3.5/hadoop-3.3.5.tar.gz && \
+    tar -xzf hadoop-3.3.5.tar.gz -C /opt && \
+    ln -s /opt/hadoop-3.3.5 /opt/hadoop && \
+    rm hadoop-3.3.5.tar.gz
+
+ENV HADOOP_HOME=/opt/hadoop
+ENV PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
+ENV HADOOP_CONF_DIR=/etc/hadoop/conf
+ENV YARN_CONF_DIR=/etc/hadoop/conf
+
+# Set working directory
 WORKDIR /app
-#Copy the jar file into the container
+
+# Copy the JAR
 COPY target/wine-ml-spark-1.0-SNAPSHOT.jar /app/app.jar
-# Set entrypoint to run Spark job
+
+# Run Spark with YARN as the master
 ENTRYPOINT ["/opt/bitnami/spark/bin/spark-submit", "--class", "com.wine.WinePredictApp", "--master", "yarn", "/app/app.jar"]
