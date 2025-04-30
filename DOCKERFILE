@@ -1,36 +1,31 @@
-FROM python:3.8-slim
+# Base image with OpenJDK
+FROM openjdk:8-jdk
 
+# Install dependencies: curl, tar, unzip
+RUN apt-get update && apt-get install -y curl tar unzip && rm -rf /var/lib/apt/lists/*
+
+# Install Hadoop 3.3.5
+RUN curl -LO https://downloads.apache.org/hadoop/common/hadoop-3.3.5/hadoop-3.3.5.tar.gz && \
+    tar -xzf hadoop-3.3.5.tar.gz -C /opt && \
+    ln -s /opt/hadoop-3.3.5 /opt/hadoop && \
+    rm hadoop-3.3.5.tar.gz
+
+# Install Spark 3.3.0 (hadoop3 version)
+RUN curl -LO https://downloads.apache.org/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz && \
+    tar -xzf spark-3.3.0-bin-hadoop3.tgz -C /opt && \
+    ln -s /opt/spark-3.3.0-bin-hadoop3 /opt/spark && \
+    rm spark-3.3.0-bin-hadoop3.tgz
+
+# Set environment variables
 ENV SPARK_HOME=/opt/spark
-ENV PATH=$PATH:$SPARK_HOME/bin
+ENV HADOOP_HOME=/opt/hadoop
+ENV PATH=$PATH:$SPARK_HOME/bin:$HADOOP_HOME/bin
 
-# Install system dependencies including Java
-RUN apt-get update && apt-get install -y \
-    default-jdk wget curl \
-    && apt-get clean
-
-# Hardcode JAVA_HOME based on the expected path
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-ENV PATH=$JAVA_HOME/bin:$PATH
-
-# Install Spark
-RUN wget https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz \
-    && tar -xvzf spark-3.3.0-bin-hadoop3.tgz -C /opt/ \
-    && mv /opt/spark-3.3.0-bin-hadoop3 /opt/spark \
-    && rm spark-3.3.0-bin-hadoop3.tgz
-
-USER root
-
+# Set working directory
 WORKDIR /app
-RUN mkdir -p /root/.ivy2
 
+# Copy the JAR file into the container
 COPY target/wine-ml-spark-1.0-SNAPSHOT.jar /app/app.jar
 
-# Set environment variables for Ivy
-ENV HOME=/root
-ENV SPARK_SUBMIT_OPTS="-Divy.cache.dir=/root/.ivy2/cache -Divy.home=/root/.ivy2"
-
-# Run in local[*] mode
-ENTRYPOINT ["spark-submit", \
-  "--class", "com.wine.WinePredictApp", \
-  "--master", "local[*]", \
-  "/app/app.jar"]
+# Run the Spark job locally with all cores
+ENTRYPOINT ["spark-submit", "--class", "com.wine.WinePredictApp", "--master", "local[*]", "/app/app.jar"]
