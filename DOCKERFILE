@@ -2,7 +2,7 @@
 FROM openjdk:8-jdk
 
 # Set environment variables
-ENV HADOOP_VERSION=3.3.5
+ENV HADOOP_VERSION=3.3.1
 ENV SPARK_VERSION=3.3.3
 ENV JAVA_HOME=/usr/local/openjdk-8
 ENV SPARK_HOME=/opt/spark
@@ -25,7 +25,7 @@ RUN curl -LO https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-
     ln -s /opt/spark-${SPARK_VERSION}-bin-hadoop3 /opt/spark && \
     rm spark-${SPARK_VERSION}-bin-hadoop3.tgz
 
-# Add Hadoop AWS dependencies for S3 access
+# Add Hadoop AWS dependencies for S3 access (use 3.3.1 to match Spark's Hadoop version)
 RUN curl -L https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar -o /opt/spark/jars/hadoop-aws-${HADOOP_VERSION}.jar && \
     curl -L https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.262/aws-java-sdk-bundle-1.12.262.jar -o /opt/spark/jars/aws-java-sdk-bundle-1.12.262.jar
 
