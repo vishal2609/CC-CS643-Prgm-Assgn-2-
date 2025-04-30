@@ -8,12 +8,8 @@ RUN apt-get update && apt-get install -y \
     default-jdk wget curl \
     && apt-get clean
 
-# Dynamically set JAVA_HOME and ensure it's persisted
-RUN JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java)))) && \
-    echo "JAVA_HOME=$JAVA_HOME" >> /etc/environment && \
-    echo "PATH=$JAVA_HOME/bin:$PATH" >> /etc/environment && \
-    echo $JAVA_HOME > /java_home.txt
-ENV JAVA_HOME=$(cat /java_home.txt)
+# Hardcode JAVA_HOME based on the expected path
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 # Install Spark
@@ -29,7 +25,7 @@ RUN mkdir -p /root/.ivy2
 
 COPY target/wine-ml-spark-1.0-SNAPSHOT.jar /app/app.jar
 
-# Set environment variables for Ivy (still needed for dependency resolution)
+# Set environment variables for Ivy
 ENV HOME=/root
 ENV SPARK_SUBMIT_OPTS="-Divy.cache.dir=/root/.ivy2/cache -Divy.home=/root/.ivy2"
 
