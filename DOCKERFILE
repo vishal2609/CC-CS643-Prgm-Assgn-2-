@@ -1,23 +1,49 @@
-FROM openjdk:8-jdk
+# Use an official Python image as the base (keeping it to match your friend's setup, though Python isn't strictly needed for your Java app)
+FROM python:3.8-slim
 
-# Install necessary tools
-RUN mkdir -p /opt && apt-get update && apt-get install -y curl tar unzip && rm -rf /var/lib/apt/lists/*
+# Set environment variables for Spark
+ENV SPARK_HOME=/opt/spark
+ENV PATH=$PATH:$SPARK_HOME/bin
 
-# Install Hadoop
-RUN curl -LO https://downloads.apache.org/hadoop/common/hadoop-3.3.5/hadoop-3.3.5.tar.gz && \
-    tar -xzf hadoop-3.3.5.tar.gz -C /opt && \
-    ln -s /opt/hadoop-3.3.5 /opt/hadoop && \
-    rm hadoop-3.3.5.tar.gz
+# Install system dependencies including Java
+RUN apt-get update && apt-get install -y \
+    default-jdk wget curl \
+    && apt-get clean
+
+# Set JAVA_HOME dynamically
+RUN export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java)))) && \
+    echo "JAVA_HOME=$JAVA_HOME" >> /etc/environment && \
+    echo "PATH=$JAVA_HOME/bin:$PATH" >> /etc/environment
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
+ENV PATH $JAVA_HOME/bin:$PATH
 
 # Install Spark
-RUN curl -LO https://downloads.apache.org/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3-scala2.12.tgz && \
-    tar -xzf spark-3.3.0-bin-hadoop3-scala2.12.tgz -C /opt && \
-    ln -s /opt/spark-3.3.0-bin-hadoop3-scala2.12 /opt/spark && \
-    rm spark-3.3.0-bin-hadoop3-scala2.12.tgz
+RUN wget https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz \
+    && tar -xvzf spark-3.3.0-bin-hadoop3.tgz -C /opt/ \
+    && mv /opt/spark-3.3.0-bin-hadoop3 /opt/spark \
+    && rm spark-3.3.0-bin-hadoop3.tgz
 
-# Create app folder and copy your JAR
+# Switch to root user for setting up directories and dependencies
+USER root
+
+# Create necessary directories
 WORKDIR /app
+RUN mkdir -p /root/.ivy2
+
+# Copy your application's JAR file
 COPY target/wine-ml-spark-1.0-SNAPSHOT.jar /app/app.jar
 
-# Default command
-ENTRYPOINT ["/opt/spark/bin/spark-submit", "--class", "com.wine.WinePredictApp", "--master", "yarn", "/app/app.jar"]
+# Add Hadoop 3.3.6 client libraries and JAX-RS dependency to match EMR
+RUN curl -L https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client/3.3.6/hadoop-client-3.3.6.jar -o /opt/spark/jars/hadoop-client-3.3.6.jar && \
+    curl -L https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/3.3.6/hadoop-common-3.3.6.jar -o /opt/spark/jars/hadoop-common-3.3.6.jar && \
+    curl -L https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-yarn-client/3.3.6/hadoop-yarn-client-3.3.6.jar -o /opt/spark/jars/hadoop-yarn-client-3.3.6.jar && \
+    curl -L https://repo1.maven.org/maven2/javax/ws/rs/javax.ws.rs-api/2.1.1/javax.ws.rs-api-2.1.1.jar -o /opt/spark/jars/javax.ws.rs-api-2.1.1.jar
+
+# Set environment variables for Hadoop/YARN and Ivy
+ENV HADOOP_CONF_DIR=/etc/hadoop/conf
+ENV YARN_CONF_DIR=/etc/hadoop/conf
+ENV HOME=/root
+ENV SPARK_SUBMIT_OPTS="-Divy.cache.dir=/root/.ivy2/cache -Divy.home=/root/.ivy2"
+
+# Set entrypoint to run your Java application on YARN
+ENTRYPOINT ["spark-submit", "--class", "com.wine.WinePredictApp", "--master", "yarn", "/app/app.jar"]
