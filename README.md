@@ -56,7 +56,7 @@ cd CC-CS643-Prgm-Assgn-2-
 ### 2. Maven Application packaging 
 - Build locally: `mvn clean package`
 
-### 3. uploaded File on S3 & Create EMR cluster 
+### 3. upload Files on S3 & Create EMR cluster 
 - Details are mentioned in Instruction Document
 
 ### 4. Train model in parallel (4 nodes)
