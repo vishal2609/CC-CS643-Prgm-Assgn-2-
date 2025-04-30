@@ -8,14 +8,5 @@ WORKDIR /app
 COPY target/wine-ml-spark-1.0-SNAPSHOT.jar /app/app.jar
 
 # Set entrypoint to run Spark job
-ENTRYPOINT ["java", "-jar", "/app/wine-ml-spark-1.0-SNAPSHOT.jar"]
-
-
-
-
-# Copy the JAR file into the container
-COPY target/wine-ml-spark-1.0-SNAPSHOT.jar /app/app.jar
-
-# Entry point to run the prediction
 ENTRYPOINT ["/opt/bitnami/spark/bin/spark-submit", "--class", "com.wine.WinePredictApp", "--master", "local[*]", "/app/app.jar"]
 
