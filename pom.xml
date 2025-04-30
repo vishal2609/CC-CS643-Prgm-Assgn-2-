@@ -1,15 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  
+
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.wine</groupId>
   <artifactId>wine-ml-spark</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>wine-ml-spark</name>
-  <url>http://maven.apache.org</url>
 
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -18,7 +17,6 @@
   </properties>
 
   <dependencies>
-    <!-- JUnit (keep for testing) -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -26,21 +24,18 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Spark Core -->
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-core_2.12</artifactId>
       <version>3.3.0</version>
     </dependency>
 
-    <!-- Spark SQL -->
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-sql_2.12</artifactId>
       <version>3.3.0</version>
     </dependency>
 
-    <!-- Spark MLlib -->
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-mllib_2.12</artifactId>
@@ -50,7 +45,6 @@
 
   <build>
     <plugins>
-      <!-- Compiler Plugin -->
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.0</version>
@@ -60,7 +54,6 @@
         </configuration>
       </plugin>
 
-      <!-- JAR Plugin to ensure proper naming -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.2.0</version>
